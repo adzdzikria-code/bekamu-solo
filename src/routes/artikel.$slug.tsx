@@ -82,7 +82,7 @@ function ArticlePage() {
       <article className="mx-auto max-w-3xl px-4 md:px-8 py-16">
         <p className="text-lg text-[#333] font-medium leading-relaxed border-l-4 border-[#D62828] pl-5 italic">{article.summary}</p>
         <div className="mt-8 space-y-6 text-[#333] leading-[1.9] text-[17px]">
-          {article.content.map((p, i) => (
+          {article.content.map((p: string, i: number) => (
             <p key={i}>{p}</p>
           ))}
         </div>

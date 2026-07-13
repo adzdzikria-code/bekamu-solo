@@ -88,6 +88,10 @@ function Index() {
   const [testiIdx, setTestiIdx] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [form, setForm] = useState({ nama: "", wa: "", gender: "Laki-laki", layanan: "Bekam Reguler", tanggal: "", jam: "", alamat: "", catatan: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -105,17 +109,70 @@ function Index() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const normalizeWa = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    if (digits.startsWith("62")) return digits;
+    if (digits.startsWith("0")) return "62" + digits.slice(1);
+    if (digits.startsWith("8")) return "62" + digits;
+    return digits;
+  };
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (form.nama.trim().length < 3) e.nama = "Nama minimal 3 karakter.";
+    if (form.nama.trim().length > 100) e.nama = "Nama maksimal 100 karakter.";
+    const waDigits = form.wa.replace(/\D/g, "");
+    if (!/^(?:\+?62|0)8\d{7,12}$/.test(form.wa.replace(/\s|-/g, ""))) {
+      e.wa = "Format WhatsApp tidak valid. Contoh: 08123456789";
+    } else if (waDigits.length < 10 || waDigits.length > 14) {
+      e.wa = "Nomor WhatsApp harus 10–14 digit.";
+    }
+    if (!form.layanan.trim()) e.layanan = "Pilih atau ketik layanan.";
+    if (!form.tanggal) {
+      e.tanggal = "Tanggal wajib diisi.";
+    } else if (form.tanggal < todayStr) {
+      e.tanggal = "Tanggal tidak boleh di masa lalu.";
+    }
+    if (!form.jam) {
+      e.jam = "Jam wajib diisi.";
+    } else if (form.jam < "08:00" || form.jam > "21:00") {
+      e.jam = "Jam operasional 08:00 – 21:00 WIB.";
+    }
+    if (form.alamat.trim().length < 5) e.alamat = "Alamat minimal 5 karakter.";
+    if (form.catatan.length > 500) e.catatan = "Catatan maksimal 500 karakter.";
+    return e;
+  };
+
   const handleBooking = (e: FormEvent) => {
     e.preventDefault();
-    const msg = `*BOOKING BEKAMU SOLO*%0A%0A` +
-      `Nama: ${form.nama}%0A` +
-      `No. WhatsApp: ${form.wa}%0A` +
-      `Jenis Kelamin: ${form.gender}%0A` +
-      `Layanan: ${form.layanan}%0A` +
-      `Tanggal: ${form.tanggal}%0A` +
-      `Jam: ${form.jam}%0A` +
-      `Alamat: ${form.alamat}%0A` +
-      `Catatan: ${form.catatan}`;
+    const eObj = validate();
+    setErrors(eObj);
+    if (Object.keys(eObj).length > 0) {
+      setSubmitStatus("Mohon perbaiki data yang bertanda merah.");
+      return;
+    }
+    const waFmt = normalizeWa(form.wa);
+    const tglFmt = new Date(form.tanggal + "T00:00:00").toLocaleDateString("id-ID", {
+      weekday: "long", day: "numeric", month: "long", year: "numeric",
+    });
+    const lines = [
+      "*🩸 BOOKING BEKAMU SOLO*",
+      "───────────────────",
+      `👤 *Nama*        : ${form.nama.trim()}`,
+      `📱 *WhatsApp*   : +${waFmt}`,
+      `⚧  *Jenis Kel.*  : ${form.gender}`,
+      `💆 *Layanan*    : ${form.layanan.trim()}`,
+      `📅 *Tanggal*    : ${tglFmt}`,
+      `⏰ *Jam*         : ${form.jam} WIB`,
+      `📍 *Alamat*      : ${form.alamat.trim()}`,
+    ];
+    if (form.catatan.trim()) {
+      lines.push(`📝 *Catatan*    : ${form.catatan.trim()}`);
+    }
+    lines.push("───────────────────");
+    lines.push("Mohon konfirmasi ketersediaan slot. Terima kasih 🙏");
+    const msg = encodeURIComponent(lines.join("\n"));
+    setSubmitStatus("Mengarahkan ke WhatsApp…");
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
   };
 

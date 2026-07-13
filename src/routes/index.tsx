@@ -412,17 +412,21 @@ function Index() {
           </div>
           <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {BLOG.map((b, i) => (
-              <article key={b.title} className="group animate-fade-up rounded-2xl overflow-hidden bg-white border border-[#eee] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 transition-all" style={{ animationDelay: `${i * 0.08}s` }}>
+              <Link key={b.slug} to="/artikel/$slug" params={{ slug: b.slug }} className="group animate-fade-up block rounded-2xl overflow-hidden bg-white border border-[#eee] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 transition-all" style={{ animationDelay: `${i * 0.08}s` }}>
                 <div className="aspect-[16/10] overflow-hidden bg-[#F5F5F5]">
-                  <img src={`https://images.unsplash.com/photo-${["1600334129128-685c5582fd35","1631217868264-e5b90bb7e133","1544161515-4ab6ce6db874","1596178065887-1198b6148b2b","1519824145371-296894a0daa9","1571019613454-1cb2f99b2d8b"][i]}?w=600`} alt={b.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={b.image} alt={b.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-[#D62828] uppercase tracking-wider">Edukasi</span>
+                  <div className="flex items-center gap-3 text-xs text-[#888]">
+                    <span className="font-semibold text-[#D62828] uppercase tracking-wider">{b.category}</span>
+                    <span>•</span>
+                    <span>{b.readTime}</span>
+                  </div>
                   <h3 className="mt-2 text-xl font-bold text-[#111] group-hover:text-[#D62828] transition-colors">{b.title}</h3>
                   <p className="mt-2 text-sm text-[#555] leading-relaxed">{b.summary}</p>
-                  <button className="mt-4 text-sm font-semibold text-[#D62828] hover:underline">Baca Selengkapnya →</button>
+                  <span className="mt-4 inline-block text-sm font-semibold text-[#D62828] group-hover:underline">Baca Selengkapnya →</span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

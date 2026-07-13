@@ -461,16 +461,21 @@ function Index() {
             <h2 className="mt-3 text-3xl md:text-5xl font-extrabold text-[#111]">Reservasi Sesi Terapi</h2>
             <p className="mt-4 text-[#555]">Isi form di bawah, kami akan menghubungi Anda melalui WhatsApp.</p>
           </div>
-          <form onSubmit={handleBooking} className="mt-12 grid md:grid-cols-2 gap-5 rounded-3xl bg-[#F5F5F5] p-6 md:p-10 shadow-[var(--shadow-card)] animate-fade-up">
-            {[
-              { name: "nama", label: "Nama Lengkap", type: "text", required: true },
-              { name: "wa", label: "Nomor WhatsApp", type: "tel", required: true },
-            ].map((f) => (
-              <div key={f.name}>
-                <label className="block text-sm font-semibold text-[#111] mb-1.5">{f.label}</label>
-                <input required={f.required} type={f.type} value={(form as any)[f.name]} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all" />
-              </div>
-            ))}
+          <form onSubmit={handleBooking} noValidate className="mt-12 grid md:grid-cols-2 gap-5 rounded-3xl bg-[#F5F5F5] p-6 md:p-10 shadow-[var(--shadow-card)] animate-fade-up">
+            <div>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Nama Lengkap <span className="text-[#D62828]">*</span></label>
+              <input type="text" maxLength={100} value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} placeholder="Nama sesuai KTP" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.nama ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.nama && <p className="mt-1 text-xs text-[#D62828]">{errors.nama}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Nomor WhatsApp <span className="text-[#D62828]">*</span></label>
+              <input type="tel" inputMode="tel" maxLength={16} value={form.wa} onChange={(e) => setForm({ ...form, wa: e.target.value.replace(/[^\d+\s-]/g, "") })} placeholder="08123456789" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.wa ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.wa ? (
+                <p className="mt-1 text-xs text-[#D62828]">{errors.wa}</p>
+              ) : (
+                <p className="mt-1 text-xs text-[#888]">Gunakan nomor aktif untuk konfirmasi booking.</p>
+              )}
+            </div>
             <div>
               <label className="block text-sm font-semibold text-[#111] mb-1.5">Jenis Kelamin</label>
               <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none">
@@ -478,31 +483,50 @@ function Index() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Layanan</label>
-              <select value={form.layanan} onChange={(e) => setForm({ ...form, layanan: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none">
-                <option>Bekam Reguler</option><option>Bekam Premium</option><option>Pijat</option><option>Herbal</option><option>Home Service</option>
-              </select>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Layanan <span className="text-[#D62828]">*</span></label>
+              <input list="layanan-list" type="text" value={form.layanan} onChange={(e) => setForm({ ...form, layanan: e.target.value })} placeholder="Ketik atau pilih layanan…" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.layanan ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              <datalist id="layanan-list">
+                {LAYANAN_OPTIONS.map((o) => <option key={o} value={o} />)}
+              </datalist>
+              {errors.layanan && <p className="mt-1 text-xs text-[#D62828]">{errors.layanan}</p>}
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Tanggal</label>
-              <input required type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Tanggal <span className="text-[#D62828]">*</span></label>
+              <input type="date" min={todayStr} value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.tanggal ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.tanggal && <p className="mt-1 text-xs text-[#D62828]">{errors.tanggal}</p>}
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Jam</label>
-              <input required type="time" value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Jam <span className="text-[#D62828]">*</span></label>
+              <input type="time" min="08:00" max="21:00" step={900} value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.jam ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.jam ? (
+                <p className="mt-1 text-xs text-[#D62828]">{errors.jam}</p>
+              ) : (
+                <p className="mt-1 text-xs text-[#888]">Jam operasional 08:00 – 21:00 WIB.</p>
+              )}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Alamat</label>
-              <input required type="text" value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Alamat <span className="text-[#D62828]">*</span></label>
+              <input type="text" maxLength={200} value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} placeholder="Alamat lengkap / lokasi terapi" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.alamat ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.alamat && <p className="mt-1 text-xs text-[#D62828]">{errors.alamat}</p>}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Catatan</label>
-              <textarea rows={3} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none resize-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Catatan <span className="text-[#888] font-normal">(opsional)</span></label>
+              <textarea rows={3} maxLength={500} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} placeholder="Keluhan / permintaan khusus" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all resize-none ${errors.catatan ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              <div className="mt-1 flex justify-between text-xs">
+                <span className="text-[#D62828]">{errors.catatan}</span>
+                <span className="text-[#888]">{form.catatan.length}/500</span>
+              </div>
             </div>
+            {submitStatus && (
+              <div className={`md:col-span-2 rounded-xl px-4 py-3 text-sm font-medium ${Object.keys(errors).length ? "bg-[#D62828]/10 text-[#D62828]" : "bg-green-50 text-green-700"}`}>
+                {submitStatus}
+              </div>
+            )}
             <div className="md:col-span-2">
               <button type="submit" className="w-full rounded-full bg-[#D62828] py-4 font-bold text-white shadow-lg hover:bg-[#b31f1f] hover:scale-[1.02] transition-all">
                 Booking via WhatsApp
               </button>
+              <p className="mt-3 text-center text-xs text-[#888]">Anda akan diarahkan ke WhatsApp dengan pesan yang sudah terisi rapi.</p>
             </div>
           </form>
         </div>

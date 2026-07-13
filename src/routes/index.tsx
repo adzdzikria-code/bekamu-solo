@@ -321,6 +321,81 @@ function Index() {
       </section>
 
       {/* HARGA */}
+      <section id="komunitas" className="py-20 md:py-28 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(#D62828 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        <div className="mx-auto max-w-7xl px-4 md:px-8 relative">
+          <div className="text-center max-w-3xl mx-auto animate-fade-up">
+            <span className="text-[#D62828] font-semibold uppercase tracking-widest text-xs">Komunitas</span>
+            <h2 className="mt-3 text-3xl md:text-5xl font-extrabold text-[#111]">Sahabat Bekamu Solo</h2>
+            <p className="mt-5 text-[#555] leading-relaxed">
+              Wadah bagi generasi muda untuk belajar, berbagi, dan berkembang dalam dunia kesehatan berbasis Thibbun Nabawi, khususnya terapi bekam. Kami mencetak generasi yang peduli kesehatan, memahami manfaat bekam secara ilmiah maupun syar'i, serta aktif menyebarkan edukasi kepada masyarakat.
+            </p>
+          </div>
+
+          <div className="mt-14 grid md:grid-cols-2 gap-6">
+            <div className="animate-fade-right rounded-3xl bg-gradient-to-br from-[#D62828] to-[#8b1a1a] p-8 md:p-10 text-white shadow-2xl">
+              <div className="flex items-center gap-3 text-2xl font-bold">🎯 <span>Visi</span></div>
+              <p className="mt-4 text-white/90 leading-relaxed">
+                Menjadi komunitas generasi muda yang peduli terhadap kesehatan dan menjadi pelopor edukasi Thibbun Nabawi di Indonesia.
+              </p>
+            </div>
+            <div className="animate-fade-left rounded-3xl bg-[#111] p-8 md:p-10 text-white shadow-2xl">
+              <div className="flex items-center gap-3 text-2xl font-bold">🌟 <span>Misi</span></div>
+              <ul className="mt-4 space-y-2 text-white/85 text-sm">
+                {[
+                  "Mengedukasi masyarakat mengenai terapi bekam.",
+                  "Mengenalkan Thibbun Nabawi kepada generasi muda.",
+                  "Menyelenggarakan pelatihan bekam.",
+                  "Mengadakan seminar kesehatan.",
+                  "Menyelenggarakan bakti sosial.",
+                  "Membentuk relawan kesehatan.",
+                ].map((m) => (
+                  <li key={m} className="flex gap-2"><span className="text-[#FFD166]">✓</span>{m}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { icon: "📚", title: "Edukasi", desc: "Membagikan ilmu kesehatan berbasis Thibbun Nabawi." },
+              { icon: "🩸", title: "Pelatihan Bekam", desc: "Kelas dasar bekam bagi anggota komunitas." },
+              { icon: "🤝", title: "Bakti Sosial", desc: "Program bekam gratis untuk masyarakat." },
+              { icon: "🌱", title: "Pengembangan Generasi", desc: "Membentuk relawan muda yang peduli sehat." },
+            ].map((c, i) => (
+              <div key={c.title} className="animate-fade-up bg-[#F5F5F5] hover:bg-white rounded-2xl p-6 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-2 transition-all border border-transparent hover:border-[#D62828]/20" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="text-4xl">{c.icon}</div>
+                <h3 className="mt-3 font-bold text-[#111]">{c.title}</h3>
+                <p className="mt-2 text-sm text-[#555]">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10">
+            <div className="text-center animate-fade-up">
+              <span className="text-[#D62828] font-semibold uppercase tracking-widest text-xs">Program Kegiatan</span>
+            </div>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {["Seminar", "Workshop Bekam", "Kajian Thibbun Nabawi", "Pelatihan Dasar Bekam", "Bakti Sosial", "Volunteer Event"].map((p) => (
+                <span key={p} className="rounded-full bg-[#F5F5F5] border border-[#e5e5e5] px-4 py-2 text-sm font-medium text-[#111] hover:bg-[#D62828] hover:text-white hover:border-[#D62828] transition-colors cursor-default">
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4 animate-fade-up">
+            <a href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Assalamu'alaikum, saya ingin bergabung dengan komunitas Sahabat Bekamu Solo.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#D62828] px-8 py-3.5 font-semibold text-white shadow-lg hover:bg-[#b31f1f] hover:-translate-y-0.5 transition-all">
+              Gabung Komunitas
+            </a>
+            <button onClick={() => scrollTo("galeri")} className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[#111] px-8 py-3.5 font-semibold text-[#111] hover:bg-[#111] hover:text-white transition-all">
+              Lihat Kegiatan
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* HARGA */}
       <section id="harga" className="py-20 md:py-28 bg-[#F5F5F5]">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="text-center max-w-2xl mx-auto animate-fade-up">

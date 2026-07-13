@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { Link, createFileRoute as _crf } from "@tanstack/react-router";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import heroImg from "@/assets/hero-bekam.jpg";
 import therapistImg from "@/assets/therapist.jpg";
+import { ARTICLES } from "@/data/articles";
 
 export const Route = createFileRoute("/")({
   component: Index,

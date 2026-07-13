@@ -241,7 +241,7 @@ function Index() {
             </a>
           </div>
           <div className="animate-fade-up mt-16 grid grid-cols-3 gap-4 max-w-2xl mx-auto" style={{ animationDelay: "0.55s" }}>
-            {[["500+", "Pasien"], ["5+", "Tahun Pengalaman"], ["100%", "Alat Steril"]].map(([n, l]) => (
+            {[["400+", "Pasien"], ["3+", "Tahun Pengalaman"], ["100%", "Alat Steril"]].map(([n, l]) => (
               <div key={l} className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur p-4 md:p-6">
                 <div className="text-2xl md:text-4xl font-extrabold text-[#D62828]">{n}</div>
                 <div className="text-xs md:text-sm text-white/80 mt-1">{l}</div>

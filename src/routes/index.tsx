@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link, createFileRoute as _crf } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import heroImg from "@/assets/hero-bekam.jpg";
 import therapistImg from "@/assets/therapist.jpg";

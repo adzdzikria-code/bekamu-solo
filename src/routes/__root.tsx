@@ -82,9 +82,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Bekamu Solo" },
       { name: "keywords", content: "bekam solo, terapi bekam, hijamah, bekam sunnah, home service bekam, pijat solo" },
       { property: "og:title", content: "Bekamu Solo — Terapi Bekam Profesional & Sesuai Sunnah" },
-      { property: "og:description", content: "Dapat sehatnya, dapat sunnahnya. Layanan terapi bekam higienis, aman, dan profesional di Solo Raya." },
+      { property: "og:description", content: "Bekamu Solo adalah pusat terapi bekam profesional di Solo Raya. Higienis, aman, nyaman, dan sesuai sunnah. Melayani bekam, pijat, herbal, dan home service." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Bekamu Solo — Terapi Bekam Profesional & Sesuai Sunnah" },
+      { name: "twitter:description", content: "Bekamu Solo adalah pusat terapi bekam profesional di Solo Raya. Higienis, aman, nyaman, dan sesuai sunnah. Melayani bekam, pijat, herbal, dan home service." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5b4eb11d-d98f-48a5-b2cb-436838598edc/id-preview-ed0b68be--026dec42-c977-49dc-9fab-26df7ba708e7.lovable.app-1783915592025.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5b4eb11d-d98f-48a5-b2cb-436838598edc/id-preview-ed0b68be--026dec42-c977-49dc-9fab-26df7ba708e7.lovable.app-1783915592025.png" },
     ],
     links: [
       {

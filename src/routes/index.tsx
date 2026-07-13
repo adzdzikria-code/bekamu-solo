@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import heroImg from "@/assets/hero-bekam.jpg";
 import therapistImg from "@/assets/therapist.jpg";
+import { ARTICLES } from "@/data/articles";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -59,13 +60,18 @@ const GALLERY = [
   "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
 ];
 
-const BLOG = [
-  { title: "Apa Itu Bekam?", summary: "Mengenal terapi bekam, sejarahnya dalam pengobatan Islam, dan bagaimana cara kerjanya bagi tubuh." },
-  { title: "Manfaat Bekam", summary: "Berbagai manfaat bekam bagi kesehatan fisik dan mental yang telah dibuktikan secara ilmiah." },
-  { title: "Waktu Terbaik Bekam", summary: "Kapan waktu yang paling dianjurkan untuk melakukan bekam sesuai tuntunan sunnah Rasulullah." },
-  { title: "Persiapan Sebelum Bekam", summary: "Hal-hal yang perlu Anda persiapkan sebelum menjalani terapi bekam agar hasilnya maksimal." },
-  { title: "Perawatan Setelah Bekam", summary: "Panduan perawatan tubuh setelah bekam untuk mempercepat pemulihan dan menjaga kondisi." },
-  { title: "Apakah Bekam Aman?", summary: "Penjelasan keamanan terapi bekam, siapa yang boleh, dan kondisi yang perlu dihindari." },
+const BLOG = ARTICLES;
+
+const LAYANAN_OPTIONS = [
+  "Bekam Reguler",
+  "Bekam Premium",
+  "Bekam Basah",
+  "Bekam Kering",
+  "Pijat Relaksasi",
+  "Pijat Terapi",
+  "Herbal",
+  "Home Service",
+  "Paket Keluarga",
 ];
 
 const FAQ = [
@@ -82,6 +88,10 @@ function Index() {
   const [testiIdx, setTestiIdx] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [form, setForm] = useState({ nama: "", wa: "", gender: "Laki-laki", layanan: "Bekam Reguler", tanggal: "", jam: "", alamat: "", catatan: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -99,17 +109,70 @@ function Index() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const normalizeWa = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    if (digits.startsWith("62")) return digits;
+    if (digits.startsWith("0")) return "62" + digits.slice(1);
+    if (digits.startsWith("8")) return "62" + digits;
+    return digits;
+  };
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (form.nama.trim().length < 3) e.nama = "Nama minimal 3 karakter.";
+    if (form.nama.trim().length > 100) e.nama = "Nama maksimal 100 karakter.";
+    const waDigits = form.wa.replace(/\D/g, "");
+    if (!/^(?:\+?62|0)8\d{7,12}$/.test(form.wa.replace(/\s|-/g, ""))) {
+      e.wa = "Format WhatsApp tidak valid. Contoh: 08123456789";
+    } else if (waDigits.length < 10 || waDigits.length > 14) {
+      e.wa = "Nomor WhatsApp harus 10–14 digit.";
+    }
+    if (!form.layanan.trim()) e.layanan = "Pilih atau ketik layanan.";
+    if (!form.tanggal) {
+      e.tanggal = "Tanggal wajib diisi.";
+    } else if (form.tanggal < todayStr) {
+      e.tanggal = "Tanggal tidak boleh di masa lalu.";
+    }
+    if (!form.jam) {
+      e.jam = "Jam wajib diisi.";
+    } else if (form.jam < "08:00" || form.jam > "21:00") {
+      e.jam = "Jam operasional 08:00 – 21:00 WIB.";
+    }
+    if (form.alamat.trim().length < 5) e.alamat = "Alamat minimal 5 karakter.";
+    if (form.catatan.length > 500) e.catatan = "Catatan maksimal 500 karakter.";
+    return e;
+  };
+
   const handleBooking = (e: FormEvent) => {
     e.preventDefault();
-    const msg = `*BOOKING BEKAMU SOLO*%0A%0A` +
-      `Nama: ${form.nama}%0A` +
-      `No. WhatsApp: ${form.wa}%0A` +
-      `Jenis Kelamin: ${form.gender}%0A` +
-      `Layanan: ${form.layanan}%0A` +
-      `Tanggal: ${form.tanggal}%0A` +
-      `Jam: ${form.jam}%0A` +
-      `Alamat: ${form.alamat}%0A` +
-      `Catatan: ${form.catatan}`;
+    const eObj = validate();
+    setErrors(eObj);
+    if (Object.keys(eObj).length > 0) {
+      setSubmitStatus("Mohon perbaiki data yang bertanda merah.");
+      return;
+    }
+    const waFmt = normalizeWa(form.wa);
+    const tglFmt = new Date(form.tanggal + "T00:00:00").toLocaleDateString("id-ID", {
+      weekday: "long", day: "numeric", month: "long", year: "numeric",
+    });
+    const lines = [
+      "*🩸 BOOKING BEKAMU SOLO*",
+      "───────────────────",
+      `👤 *Nama*        : ${form.nama.trim()}`,
+      `📱 *WhatsApp*   : +${waFmt}`,
+      `⚧  *Jenis Kel.*  : ${form.gender}`,
+      `💆 *Layanan*    : ${form.layanan.trim()}`,
+      `📅 *Tanggal*    : ${tglFmt}`,
+      `⏰ *Jam*         : ${form.jam} WIB`,
+      `📍 *Alamat*      : ${form.alamat.trim()}`,
+    ];
+    if (form.catatan.trim()) {
+      lines.push(`📝 *Catatan*    : ${form.catatan.trim()}`);
+    }
+    lines.push("───────────────────");
+    lines.push("Mohon konfirmasi ketersediaan slot. Terima kasih 🙏");
+    const msg = encodeURIComponent(lines.join("\n"));
+    setSubmitStatus("Mengarahkan ke WhatsApp…");
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
   };
 
@@ -349,17 +412,21 @@ function Index() {
           </div>
           <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {BLOG.map((b, i) => (
-              <article key={b.title} className="group animate-fade-up rounded-2xl overflow-hidden bg-white border border-[#eee] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 transition-all" style={{ animationDelay: `${i * 0.08}s` }}>
+              <Link key={b.slug} to="/artikel/$slug" params={{ slug: b.slug }} className="group animate-fade-up block rounded-2xl overflow-hidden bg-white border border-[#eee] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-1 transition-all" style={{ animationDelay: `${i * 0.08}s` }}>
                 <div className="aspect-[16/10] overflow-hidden bg-[#F5F5F5]">
-                  <img src={`https://images.unsplash.com/photo-${["1600334129128-685c5582fd35","1631217868264-e5b90bb7e133","1544161515-4ab6ce6db874","1596178065887-1198b6148b2b","1519824145371-296894a0daa9","1571019613454-1cb2f99b2d8b"][i]}?w=600`} alt={b.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={b.image} alt={b.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-[#D62828] uppercase tracking-wider">Edukasi</span>
+                  <div className="flex items-center gap-3 text-xs text-[#888]">
+                    <span className="font-semibold text-[#D62828] uppercase tracking-wider">{b.category}</span>
+                    <span>•</span>
+                    <span>{b.readTime}</span>
+                  </div>
                   <h3 className="mt-2 text-xl font-bold text-[#111] group-hover:text-[#D62828] transition-colors">{b.title}</h3>
                   <p className="mt-2 text-sm text-[#555] leading-relaxed">{b.summary}</p>
-                  <button className="mt-4 text-sm font-semibold text-[#D62828] hover:underline">Baca Selengkapnya →</button>
+                  <span className="mt-4 inline-block text-sm font-semibold text-[#D62828] group-hover:underline">Baca Selengkapnya →</span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
@@ -398,16 +465,21 @@ function Index() {
             <h2 className="mt-3 text-3xl md:text-5xl font-extrabold text-[#111]">Reservasi Sesi Terapi</h2>
             <p className="mt-4 text-[#555]">Isi form di bawah, kami akan menghubungi Anda melalui WhatsApp.</p>
           </div>
-          <form onSubmit={handleBooking} className="mt-12 grid md:grid-cols-2 gap-5 rounded-3xl bg-[#F5F5F5] p-6 md:p-10 shadow-[var(--shadow-card)] animate-fade-up">
-            {[
-              { name: "nama", label: "Nama Lengkap", type: "text", required: true },
-              { name: "wa", label: "Nomor WhatsApp", type: "tel", required: true },
-            ].map((f) => (
-              <div key={f.name}>
-                <label className="block text-sm font-semibold text-[#111] mb-1.5">{f.label}</label>
-                <input required={f.required} type={f.type} value={(form as any)[f.name]} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all" />
-              </div>
-            ))}
+          <form onSubmit={handleBooking} noValidate className="mt-12 grid md:grid-cols-2 gap-5 rounded-3xl bg-[#F5F5F5] p-6 md:p-10 shadow-[var(--shadow-card)] animate-fade-up">
+            <div>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Nama Lengkap <span className="text-[#D62828]">*</span></label>
+              <input type="text" maxLength={100} value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} placeholder="Nama sesuai KTP" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.nama ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.nama && <p className="mt-1 text-xs text-[#D62828]">{errors.nama}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Nomor WhatsApp <span className="text-[#D62828]">*</span></label>
+              <input type="tel" inputMode="tel" maxLength={16} value={form.wa} onChange={(e) => setForm({ ...form, wa: e.target.value.replace(/[^\d+\s-]/g, "") })} placeholder="08123456789" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.wa ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.wa ? (
+                <p className="mt-1 text-xs text-[#D62828]">{errors.wa}</p>
+              ) : (
+                <p className="mt-1 text-xs text-[#888]">Gunakan nomor aktif untuk konfirmasi booking.</p>
+              )}
+            </div>
             <div>
               <label className="block text-sm font-semibold text-[#111] mb-1.5">Jenis Kelamin</label>
               <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none">
@@ -415,31 +487,50 @@ function Index() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Layanan</label>
-              <select value={form.layanan} onChange={(e) => setForm({ ...form, layanan: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none">
-                <option>Bekam Reguler</option><option>Bekam Premium</option><option>Pijat</option><option>Herbal</option><option>Home Service</option>
-              </select>
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Layanan <span className="text-[#D62828]">*</span></label>
+              <input list="layanan-list" type="text" value={form.layanan} onChange={(e) => setForm({ ...form, layanan: e.target.value })} placeholder="Ketik atau pilih layanan…" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.layanan ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              <datalist id="layanan-list">
+                {LAYANAN_OPTIONS.map((o) => <option key={o} value={o} />)}
+              </datalist>
+              {errors.layanan && <p className="mt-1 text-xs text-[#D62828]">{errors.layanan}</p>}
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Tanggal</label>
-              <input required type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Tanggal <span className="text-[#D62828]">*</span></label>
+              <input type="date" min={todayStr} value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.tanggal ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.tanggal && <p className="mt-1 text-xs text-[#D62828]">{errors.tanggal}</p>}
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Jam</label>
-              <input required type="time" value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Jam <span className="text-[#D62828]">*</span></label>
+              <input type="time" min="08:00" max="21:00" step={900} value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.jam ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.jam ? (
+                <p className="mt-1 text-xs text-[#D62828]">{errors.jam}</p>
+              ) : (
+                <p className="mt-1 text-xs text-[#888]">Jam operasional 08:00 – 21:00 WIB.</p>
+              )}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Alamat</label>
-              <input required type="text" value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Alamat <span className="text-[#D62828]">*</span></label>
+              <input type="text" maxLength={200} value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} placeholder="Alamat lengkap / lokasi terapi" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all ${errors.alamat ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              {errors.alamat && <p className="mt-1 text-xs text-[#D62828]">{errors.alamat}</p>}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-[#111] mb-1.5">Catatan</label>
-              <textarea rows={3} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} className="w-full rounded-xl border border-[#e0e0e0] bg-white px-4 py-3 text-sm focus:border-[#D62828] focus:outline-none resize-none" />
+              <label className="block text-sm font-semibold text-[#111] mb-1.5">Catatan <span className="text-[#888] font-normal">(opsional)</span></label>
+              <textarea rows={3} maxLength={500} value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} placeholder="Keluhan / permintaan khusus" className={`w-full rounded-xl border bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D62828]/20 transition-all resize-none ${errors.catatan ? "border-[#D62828]" : "border-[#e0e0e0] focus:border-[#D62828]"}`} />
+              <div className="mt-1 flex justify-between text-xs">
+                <span className="text-[#D62828]">{errors.catatan}</span>
+                <span className="text-[#888]">{form.catatan.length}/500</span>
+              </div>
             </div>
+            {submitStatus && (
+              <div className={`md:col-span-2 rounded-xl px-4 py-3 text-sm font-medium ${Object.keys(errors).length ? "bg-[#D62828]/10 text-[#D62828]" : "bg-green-50 text-green-700"}`}>
+                {submitStatus}
+              </div>
+            )}
             <div className="md:col-span-2">
               <button type="submit" className="w-full rounded-full bg-[#D62828] py-4 font-bold text-white shadow-lg hover:bg-[#b31f1f] hover:scale-[1.02] transition-all">
                 Booking via WhatsApp
               </button>
+              <p className="mt-3 text-center text-xs text-[#888]">Anda akan diarahkan ke WhatsApp dengan pesan yang sudah terisi rapi.</p>
             </div>
           </form>
         </div>

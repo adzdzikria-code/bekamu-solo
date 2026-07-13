@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const WA_NUMBER = "6281234567890";
+const WA_NUMBER = "6285857768994";
 
 const NAV = [
   { id: "home", label: "Home" },

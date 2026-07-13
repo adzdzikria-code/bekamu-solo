@@ -14,6 +14,7 @@ const NAV = [
   { id: "home", label: "Home" },
   { id: "tentang", label: "Tentang" },
   { id: "layanan", label: "Layanan" },
+  { id: "komunitas", label: "Komunitas" },
   { id: "harga", label: "Harga" },
   { id: "testimoni", label: "Testimoni" },
   { id: "galeri", label: "Galeri" },

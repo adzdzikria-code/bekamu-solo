@@ -60,13 +60,18 @@ const GALLERY = [
   "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
 ];
 
-const BLOG = [
-  { title: "Apa Itu Bekam?", summary: "Mengenal terapi bekam, sejarahnya dalam pengobatan Islam, dan bagaimana cara kerjanya bagi tubuh." },
-  { title: "Manfaat Bekam", summary: "Berbagai manfaat bekam bagi kesehatan fisik dan mental yang telah dibuktikan secara ilmiah." },
-  { title: "Waktu Terbaik Bekam", summary: "Kapan waktu yang paling dianjurkan untuk melakukan bekam sesuai tuntunan sunnah Rasulullah." },
-  { title: "Persiapan Sebelum Bekam", summary: "Hal-hal yang perlu Anda persiapkan sebelum menjalani terapi bekam agar hasilnya maksimal." },
-  { title: "Perawatan Setelah Bekam", summary: "Panduan perawatan tubuh setelah bekam untuk mempercepat pemulihan dan menjaga kondisi." },
-  { title: "Apakah Bekam Aman?", summary: "Penjelasan keamanan terapi bekam, siapa yang boleh, dan kondisi yang perlu dihindari." },
+const BLOG = ARTICLES;
+
+const LAYANAN_OPTIONS = [
+  "Bekam Reguler",
+  "Bekam Premium",
+  "Bekam Basah",
+  "Bekam Kering",
+  "Pijat Relaksasi",
+  "Pijat Terapi",
+  "Herbal",
+  "Home Service",
+  "Paket Keluarga",
 ];
 
 const FAQ = [
